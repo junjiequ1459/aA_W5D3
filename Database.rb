@@ -14,7 +14,7 @@ end
 class Question
   attr_accessor :id, :title, :body, :author_id
 
-  def initialize(options)
+  def initialize(options => {})
     @id = options["id"]
     @title = options["title"]
     @body = options["body"]
@@ -24,11 +24,11 @@ class Question
   def self.find_by_id(num)
     data = QuestionsDatabase.instance.execute(<<-SQL, num)
     SELECT
-    *
+      *
     FROM
-    questions
+      questions
     WHERE
-    id = ?
+      id = ?
     SQL
     return nil if data.length == 0
     User.new(data.first)
@@ -46,12 +46,14 @@ class Question
   end
 
   def author
-    author_id
+    User.find_by_id(author_id)
   end
 
   def replies
     Reply.find_by_question_id(id)
   end
+
+
 end
 
 class User
@@ -60,11 +62,11 @@ class User
   def self.find_by_id(num)
     data = QuestionsDatabase.instance.execute(<<-SQL, num)
     SELECT
-    *
+      *
     FROM
-    users
+      users
     WHERE
-    id = ?
+      id = ?
     SQL
     return nil if data.length == 0
     User.new(data.first)
@@ -75,7 +77,7 @@ class User
   #   User.new(data)
   #  end
 
-  def initialize(options)
+  def initialize(options => {})
     @id = options["id"]
     @fname = options["fname"]
     @lname = options["lname"]
@@ -105,7 +107,7 @@ end
 class QuestionFollow
   attr_accessor :id, :user_id, :question_id
 
-  def initialize(options)
+  def initialize(options => {})
     @id = options["id"]
     @user_id = options["user_id"]
     @question_id = options["question_id"]
@@ -123,6 +125,36 @@ class QuestionFollow
     return nil if data.length == 0
     User.new(data.first)
   end
+
+  def self.followers_for_question_id(question_id)
+    data = QuestionsDatabase.instance.execute(<<-SQL, question_id)
+    SELECT
+      *
+    FROM
+      users
+    JOIN
+      questions ON questions.author_id = user(id)
+    WHERE
+      question_id = ?
+    SQL
+
+    return nil if data.length == 0
+    User.new(data)
+  end
+
+  def self.followed_questions_for_user_id(user_id)
+    data = QuestionsDatabase.instance.execute(<<-SQL, user_id)
+    SELECT
+      *
+    FROM
+      questions
+    JOIN
+      users ON users.id = 
+    WHERE
+      user_id = ?
+    SQL
+    
+
 end
 
 class Reply
@@ -139,11 +171,11 @@ class Reply
   def self.find_by_id(num)
     data = QuestionsDatabase.instance.execute(<<-SQL, num)
     SELECT
-    *
+      *
     FROM
-    replies
+      replies
     WHERE
-    id = ?
+      id = ?
     SQL
     return nil if data.length == 0
     User.new(data.first)
@@ -172,19 +204,19 @@ class Reply
   end
 
   def author
-    id
+    Question.find_by_id() #*********
   end
 
   def question
-    question_id
+    Question.find_by_id(question_id)
   end
 
   def parent_reply
-    parent_id
+    User.find_by_id(parent_id)
   end
 
   def child_replies
-    replier_id
+    User.find_by_id(replier_id)
   end
 end
 
