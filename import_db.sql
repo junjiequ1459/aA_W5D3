@@ -11,28 +11,44 @@ CREATE TABLE questions (
     id INTEGER PRIMARY KEY,
     title TEXT NOT NULL,
     body TEXT NOT NULL,
-    author TEXT NOT NULL
+    author_id INTEGER NOT NULL
+
+    FOREIGN KEY (author_id) REFERENCES users(id)
 );
 
 CREATE TABLE question_follows (
-    user_id INTEGER PRIMARY KEY,
-    question_id INTEGER PRIMARY KEY
+    id INTEGER PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    question_id INTEGER NOT NULL
+
+    FOREIGN KEY(user_id) REFERENCES users(id)
+    FOREIGN KEY(question_id) REFERENCES questions(id)
 );
 
 
 CREATE TABLE replies ( 
+    id INTEGER PRIMARY KEY,
     body TEXT NOT NULL,
-    FOREIGN KEY (body) REFERENCES questions(id),
-    FOREIGN KEY (body) REFERENCES replies(body),
-    FOREIGN KEY (body) REFERENCES user(id)
 
+    question_id INTEGER NOT NULL,
+    parent_id INTEGER,
+    replier_id INTEGER NOT NULL,
+
+
+    FOREIGN KEY (question_id) REFERENCES questions(id),
+    FOREIGN KEY (parent_id) REFERENCES user(id),
+    FOREIGN KEY (replier_id) REFERENCES user(id)
 );
 
 CREATE TABLE question_likes (
+    id INTEGER PRIMARY KEY,
     likes INTEGER NOT NULL,
     
-    FOREIGN KEY (likes) REFERENCES users(id),
-    FOREIGN KEY (likes) REFERENCES questions(id)
+    question_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+
+    FOREIGN KEY (question_id) REFERENCES questions(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 INSERT INTO
