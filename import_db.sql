@@ -16,7 +16,7 @@ CREATE TABLE questions (
 
 CREATE TABLE question_follows (
     user_id INTEGER PRIMARY KEY,
-    author TEXT NOT NULL 
+    question_id INTEGER PRIMARY KEY
 );
 
 
